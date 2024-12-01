@@ -17,7 +17,10 @@ def a_radianes(coordenadas):
     latitud_radianes = radians(latitud)
     '''
     pass
-
+    latitud_radianes = radians(coordenadas.latitud)
+    longitud_radianes = radians(coordenadas.longitud)
+    return Coordenadas(latitud_radianes, longitud_radianes)
+       
 
 def distancia_harvesine(coordenadas1, coordenadas2):
     '''Devuelve la distancia de harvesine entre dos coordenadas
@@ -30,6 +33,18 @@ def distancia_harvesine(coordenadas1, coordenadas2):
     @rtype: float
     '''
     pass
+    
+    R = 6371.0
+    lat1, lon1 = coordenadas1.latitud, coordenadas1.longitud
+    lat2, lon2 = coordenadas2.latitud, coordenadas2.longitud
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * asin(sqrt(a))
+
+    distancia = R * c
+    return distancia
 
 def redondear(coordenadas):
     '''Devuelve unas coordenadas cuya latitud y longitud son 
@@ -45,3 +60,7 @@ def redondear(coordenadas):
     latitud_redondeada = round(latitud)
     '''
     pass
+
+    latitud_redondeada = round(coordenadas.latitud)
+    longitud_redondeada = round(coordenadas.longitud)
+    return Coordenadas(latitud_redondeada, longitud_redondeada)
