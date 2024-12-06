@@ -410,7 +410,7 @@ def numero_avistamientos_por_año(avistamientos: list[Avistamiento]) -> dict[int
         if año not in num_avistamientos:
             num_avistamientos[año] = 0
             num_avistamientos[año] += 1
-        return num_avistamientos
+    return num_avistamientos
 
 
 def numero_avistamientos_por_año2(avistamientos: list[Avistamiento]) -> dict[int, int]:
@@ -539,14 +539,6 @@ def longitud_media_comentarios_por_estado(avistamientos: list[Avistamiento]) -> 
     calcule la media. Para definir este diccionario usamos una función
     auxiliar que calcule la media de una lista de Avistamientos
     '''
-    # dicc = {}
-    # for i in avistamientos:
-    #     if i.estado not in dicc:
-    #         dicc[i.estado] = []
-    # dicc[i.estado].append(len(i.comentarios))
-    # for i.estado in dicc:
-    #     dicc[i.estado] = statistics.mean(dicc[i.estado])
-    # return dicc
 
     diccionario = agrupa_avistamientos_por_estado(avistamientos)
     medias_por_estado = {}
@@ -611,12 +603,26 @@ def porc_avistamientos_por_forma(avistamientos: list[Avistamiento]) -> dict[str,
     resulten de dividir los valores del diccionario anterior por el número
     total de avistamientos, para obtener los porcentajes.
     '''  
-    pass
-
+    dicc = {}
+    for i in avistamientos:
+        if i.forma not in dicc:
+            dicc[i.forma] = 0
+        dicc[i.forma] += 1
+    res = {}
+    for i in avistamientos:
+        if i.forma not in res:
+            res[i.forma] = dicc[i.forma]/len(avistamientos) * 100
+    return res
 
 def porc_avistamientos_por_forma2(avistamientos: list[Avistamiento]) -> dict[str, float]:
     # Solución alternativa con Counter
-    pass
+    cont = Counter([i.forma for i in avistamientos])
+    dicc = {}
+    for forma in cont:
+        if forma not in dicc:
+            dicc[forma] = cont[forma]/len(avistamientos) * 100
+    return dicc
+
 
 ### 4.9 Avistamientos de mayor duración por estado
 def avistamientos_mayor_duracion_por_estado(avistamientos: list[Avistamiento], n: int=3) -> dict[str, list[Avistamiento]]:
@@ -640,12 +646,22 @@ def avistamientos_mayor_duracion_por_estado(avistamientos: list[Avistamiento], n
     y cuyos valores sean las mismas listas, pero en orden de mayor a menor
     duración y recortadas a "limite" elementos.
     '''
-    pass
+    dicc = {}
+    for i in avistamientos:
+        if i.estado not in dicc:
+            dicc[i.estado] = []
+        dicc[i.estado].append(i)
+    res = {}
+    for estados, avistamientos_observados in dicc.items():
+        if estados not in res:
+            res[estados] = []
+        res[estados].append(sorted(avistamientos_observados, key = lambda i:i.duracion, reverse = True)[:n])
+    return res
+
 
 def avistamientos_mayor_duracion_por_estado2(avistamientos: list[Avistamiento], n: int=3) -> dict[str, list[Avistamiento]]:
     # Usando una definición por compresión
     pass
-
 
 ### 4.10 Año con más avistamientos de una forma
 def año_mas_avistamientos_forma(avistamientos: list[Avistamiento], forma: str) -> int:
@@ -666,7 +682,12 @@ def año_mas_avistamientos_forma(avistamientos: list[Avistamiento], forma: str) 
     utilizando la función ya definida numero_avistamientos_por_año.
     Luego, se calcula el máximo del diccionario según los valores.
     '''
-    pass
+    dicc = {}
+    for i in avistamientos:
+        if i.año not in dicc:
+            dicc[i.año] = numero_avistamientos_por_año(i)
+    maximo = max(dicc.values())
+    return maximo
 
 def año_mas_avistamientos_forma2(avistamientos: list[Avistamiento], forma: str) -> int:
     # con Counter
@@ -694,8 +715,6 @@ def estados_mas_avistamientos(avistamientos: list[Avistamiento], n: int=5) -> li
     sus respectivos valores en orden decreciente. Finalmente, recortaremos
     esta lista a "limite" elementos.
     '''
-    pass     
-
     diccionario = {}
     for i in avistamientos:
         estado = i.estado
@@ -733,6 +752,13 @@ def duracion_total_avistamientos_año(avistamientos: list[Avistamiento], estado:
     '''
     pass
 
+    dicc = {}
+    for i in avistamientos:
+        if i.estado == estado:
+         if i.fechahora.year not in dicc:
+               dicc[i.fechahora.year] = i.duracion
+        dicc[i.año] += i.duracion
+    return dicc
 
 def duracion_total_avistamientos_año2(avistamientos: list[Avistamiento], estado: str) -> dict[int, int]:
     #Con defaultdict
@@ -756,4 +782,12 @@ def avistamiento_mas_reciente_por_estado(avistamientos: list[Avistamiento]) -> d
     Después crearemos un segundo diccionario cuyas claves sean los estados y
     cuyos valores sean los valores máximos de las listas, según el campo fechahora.
     '''
-    pass
+    dicc = {}
+    for i in avistamientos:
+        if i.estado not in dicc:
+            dicc[i.estado] = []
+        dicc[i.estado].append(longitud_media_comentarios_por_estado(i))
+    res = {}
+    for estado, longitudes in dicc.items():
+        res[estado].append(max(longitudes, key = lambda x: x.fechahora))
+    return res
